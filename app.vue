@@ -34,6 +34,23 @@ const breakTimeCalc = (data) => {
 let final = [];
 const result = ref();
 
+const parseDateString = (dateString) => {
+  var parts = dateString.split(/[/: ]/); // Split the string into an array of parts
+
+  // Extract the date and time components
+  var day = parseInt(parts[0], 10);
+  var month = parseInt(parts[1], 10) - 1; // Months in JavaScript are zero-based (0-11)
+  var year = parseInt(parts[2], 10);
+  var hour = (parseInt(parts[3], 10) % 12) + (parts[6] === 'pm' ? 12 : 0); // Adjust for AM/PM
+  var minute = parseInt(parts[4], 10);
+  var second = parseInt(parts[5], 10);
+
+  // Create a new Date object
+  var date = new Date(year, month, day, hour, minute, second);
+
+  return date;
+};
+
 const dataParser = (jsson) => {
   // 9:15 den sonrasini hesapla
   // 18:00 den sonrasini hesapla
@@ -43,7 +60,7 @@ const dataParser = (jsson) => {
       name: jsson[index][2],
       department: jsson[index][3],
       type: jsson[index][5].includes('CKS') ? 'CKS' : 'GRS',
-      time: new Date(jsson[index][6]),
+      time: parseDateString(jsson[index][6]),
       cardNo: jsson[index][7],
     });
   }
