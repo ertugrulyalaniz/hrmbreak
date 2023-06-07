@@ -16,6 +16,7 @@ const dropLink = async (e) => {
   dataParser(jsa);
 };
 
+const isTable = ref(true);
 const breakTimeCalc = (data) => {
   let totalBreakTime = 0;
 
@@ -35,17 +36,15 @@ let final = [];
 const result = ref();
 
 const parseDateString = (dateString) => {
-  var parts = dateString.split(/[/: ]/); // Split the string into an array of parts
+  var parts = dateString.split(/[/: ]/);
 
-  // Extract the date and time components
   var day = parseInt(parts[0], 10);
-  var month = parseInt(parts[1], 10) - 1; // Months in JavaScript are zero-based (0-11)
+  var month = parseInt(parts[1], 10) - 1;
   var year = parseInt(parts[2], 10);
-  var hour = (parseInt(parts[3], 10) % 12) + (parts[6] === 'pm' ? 12 : 0); // Adjust for AM/PM
+  var hour = (parseInt(parts[3], 10) % 12) + (parts[6] === 'pm' ? 12 : 0);
   var minute = parseInt(parts[4], 10);
   var second = parseInt(parts[5], 10);
 
-  // Create a new Date object
   var date = new Date(year, month, day, hour, minute, second);
 
   return date;
@@ -83,8 +82,45 @@ const dataParser = (jsson) => {
     >
       Drop Excel heree
     </article>
+    <fieldset>
+      <label for="switch">
+        <input
+          type="checkbox"
+          id="switch"
+          name="switch"
+          role="switch"
+          v-model="isTable"
+        />
+        Table view
+      </label>
+    </fieldset>
 
-    <details v-for="res in result">
+    <table v-if="isTable">
+      <thead>
+        <tr>
+          <th scope="col">Sicil No</th>
+          <th scope="col">Name</th>
+          <th scope="col">Department</th>
+          <th scope="col">Total break time (dk)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          v-for="res in result"
+          :style="
+            breakTimeCalc(res) > 105
+              ? 'background:#ffdada; padding:16px'
+              : 'padding:16px;'
+          "
+        >
+          <th scope="row">{{ res[0].id }}</th>
+          <td>{{ res[0].name }}</td>
+          <td>{{ res[0].department }}</td>
+          <td>{{ breakTimeCalc(res) }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <details v-for="res in result" v-else>
       <summary
         :style="
           breakTimeCalc(res) > 105
